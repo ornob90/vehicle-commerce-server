@@ -20,6 +20,8 @@ const client = new MongoClient(uri, {
   },
 });
 
+// Inserting all the data to the database complete
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -27,6 +29,14 @@ async function run() {
 
     const productCollection = client.db("autoMobileDB").collection("product");
     const cartCollection = client.db("autoMobileDB").collection("cart");
+
+    // get all products
+    app.get("/products", async (req, res) => {
+      const cursor = productCollection.find();
+      const result = await cursor.toArray();
+
+      res.send(result);
+    });
 
     // post single product
     app.post("/product", async (req, res) => {
