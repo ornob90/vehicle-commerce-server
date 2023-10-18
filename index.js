@@ -91,6 +91,39 @@ async function run() {
       res.send(result);
     });
 
+    // update a product by ID in productDB
+    app.put("/products/:id", async (req, res) => {
+      const id = req.params.id;
+
+      const filter = { _id: new ObjectId(id) };
+
+      const options = { upsert: true };
+      const updateProduct = req.body;
+
+      const product = {
+        $set: {
+          image: updateProduct.image,
+          name: updateProduct.name,
+          type: updateProduct.type,
+          price: updateProduct.price,
+          shortdescription: updateProduct.shortdescription,
+          rating: updateProduct.rating,
+          horsepower: updateProduct.horsepower,
+          mileage: updateProduct.mileage,
+          category: updateProduct.category,
+        },
+      };
+
+      const result = await productCollection.updateOne(
+        filter,
+        product,
+        options
+      );
+
+      res.send(result);
+    });
+
+    // delete a product from Product DB
     app.delete("/products/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -98,6 +131,7 @@ async function run() {
       res.send(result);
     });
 
+    // delete a product from cart DB
     app.delete("/cart/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
