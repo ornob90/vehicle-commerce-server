@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const app = express();
 
@@ -28,10 +28,27 @@ async function run() {
     const productCollection = client.db("autoMobileDB").collection("product");
     const cartCollection = client.db("autoMobileDB").collection("cart");
 
+    // post single product
     app.post("/product", async (req, res) => {
       const product = req.body;
 
       const result = await productCollection.insertOne(product);
+      res.send(result);
+    });
+
+    // post multiple product
+    app.post("/products", async (req, res) => {
+      const products = req.body;
+      const options = { ordered: true };
+
+      const result = await productCollection.insertMany(products, options);
+      res.send(result);
+    });
+
+    app.delete("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await productCollection.deleteOne(query);
       res.send(result);
     });
 
