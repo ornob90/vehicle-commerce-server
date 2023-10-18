@@ -67,6 +67,14 @@ async function run() {
       res.send(result);
     });
 
+    // post single product to cart
+    app.post("/product", async (req, res) => {
+      const product = req.body;
+
+      const result = await cartCollection.insertOne(product);
+      res.send(result);
+    });
+
     // post multiple product
     app.post("/products", async (req, res) => {
       const products = req.body;
