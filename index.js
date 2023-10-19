@@ -5,6 +5,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 const port = process.env.PORT || 5001;
@@ -29,6 +30,7 @@ async function run() {
 
     const productCollection = client.db("autoMobileDB").collection("product");
     const cartCollection = client.db("autoMobileDB").collection("cart");
+    const adsCollection = client.db("autoMobileDB").collection("ads");
 
     // get all products
     app.get("/products", async (req, res) => {
@@ -57,11 +59,22 @@ async function run() {
       res.send(result);
     });
 
-    // get single product details
+    // get single product details by id
     app.get("/product/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await productCollection.findOne(query);
+
+      res.send(result);
+    });
+
+    // get ads data by category
+    app.get("/ads/:category", async (req, res) => {
+      const category = req.params.category;
+      const query = { category };
+
+      const cursor = adsCollection.find(query);
+      const result = await cursor.toArray();
 
       res.send(result);
     });
@@ -88,6 +101,14 @@ async function run() {
       const options = { ordered: true };
 
       const result = await productCollection.insertMany(products, options);
+      res.send(result);
+    });
+
+    // post ads
+    app.post("/ads", async (req, res) => {
+      const ads = req.body;
+      const result = await adsCollection.insertOne(ads);
+
       res.send(result);
     });
 
